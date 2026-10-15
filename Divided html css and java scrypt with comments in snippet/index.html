@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<!-- Dentaku - index.html: page structure. Styles are in style.css, logic in script.js. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<!-- viewport-fit=cover lets the page use the full phone screen (notch-safe padding is in the CSS) -->
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dentaku 電卓</title>
+<!-- Google Fonts: Zen Old Mincho (headings), Zen Kaku Gothic New (text), IBM Plex Mono (numbers) -->
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Zen+Old+Mincho:wght@500;700&display=swap" rel="stylesheet">
+<!-- Our own styles -->
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+ <!-- Header: seal-style logo + name on the left, theme button on the right -->
+ <header>
+  <h1 aria-label="Dentaku 電卓"><span class="hanko" aria-hidden="true">電<br>卓</span><span class="word">Dentaku</span></h1>
+  <button id="theme" type="button" aria-label="Toggle dark mode">Theme</button>
+ </header>
+ <div class="layout">
+  <!-- Left menu: filled in by drawNav() in script.js -->
+  <nav id="nav" aria-label="Calculators"></nav>
+  <!-- Calculator panel: filled in by draw() / sci() / base() in script.js -->
+  <main id="main" aria-live="polite"></main>
+ </div>
+</div>
+<!-- Our own logic (loaded last so the page elements already exist) -->
+<script src="script.js"></script>
+</body>
+</html>

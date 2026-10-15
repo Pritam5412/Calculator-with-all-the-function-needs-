@@ -1,0 +1,115 @@
+/* Dentaku - style.css
+   Layout, colours and typography for the calculator site. */
+
+/* Colour theme: light colours by default. Dark colours apply when the device prefers dark mode
+   or the Theme button sets data-theme="dark" on the page. */
+:root{--bg:#ece5d6;--panel:#f7f3e8;--ink:#1c1a17;--mute:#675f53;--line:#cdc3ae;--acc:#b3261e;--acc-ink:#fff;--key:#ebe4d2;--hot:#b3261e;--hot-ink:#fff;--ai:#27506f}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121110;--panel:#1b1916;--ink:#ece5d6;--mute:#a59c8b;--line:#38342d;--acc:#d3412b;--acc-ink:#fff;--key:#262320;--hot:#d3412b;--hot-ink:#fff;--ai:#8fb3d1}}
+:root[data-theme="dark"]{--bg:#121110;--panel:#1b1916;--ink:#ece5d6;--mute:#a59c8b;--line:#38342d;--acc:#d3412b;--acc-ink:#fff;--key:#262320;--hot:#d3412b;--hot-ink:#fff;--ai:#8fb3d1}
+
+/* Page-wide basics: box sizing and padding for phone notches (safe areas) */
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+/* Page background, text colour and base font */
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "IBM Plex Sans",system-ui,sans-serif}
+/* Centred page container (a wave pattern is added above it further below) */
+.app{max-width:1020px;margin:0 auto;padding:20px 16px 40px}
+/* Top bar: logo on the left, theme button on the right */
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+/* Site title */
+h1{font-size:1.5rem;margin:0;font-weight:600;letter-spacing:-.01em}
+/* Buttons inherit the page font; clear keyboard focus outline for accessibility */
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+/* Dark / light theme toggle button */
+#theme{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:6px 14px}
+/* Two columns: menu on the left, calculator panel on the right */
+.layout{display:grid;grid-template-columns:210px 1fr;gap:18px;align-items:start}
+/* Left menu box */
+nav{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:8px}
+/* Menu group headings */
+nav h2{font-size:.8rem;color:var(--mute);margin:10px 10px 4px;font-weight:500}
+/* Menu items with hover and selected states */
+nav button{display:block;width:100%;text-align:left;background:none;border:0;border-radius:8px;padding:8px 10px}
+nav button:hover{background:var(--key)}
+nav button[aria-current="true"]{background:var(--acc);color:var(--acc-ink);font-weight:500}
+/* Main calculator panel */
+main{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;min-width:0}
+main h2{margin:0 0 16px;font-size:1.25rem}
+/* Input form: fields flow into as many columns as fit the width */
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px}
+label{display:block;font-size:.88rem;color:var(--mute)}
+input,select{width:100%;margin-top:4px;padding:10px 12px;font:inherit;color:var(--ink);background:var(--key);border:1px solid var(--line);border-radius:8px}
+/* Results area under the form (label on the left, value on the right) */
+.out{margin-top:22px;border-top:1px solid var(--line);padding-top:16px}
+.row{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px dashed var(--line)}
+.row span:first-child{color:var(--mute)}
+.row b{font-family:"IBM Plex Mono",monospace;font-weight:500;text-align:right;overflow-wrap:anywhere}
+.row.big{display:block;border:0;padding:0 0 10px}
+.row.big span{display:block;font-size:.88rem}
+.row.big b{display:block;font-size:2rem;text-align:left;color:var(--acc)}
+/* Scientific calculator display: typed expression and result */
+.disp{background:var(--key);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:12px}
+.disp input{background:none;border:0;padding:0;margin:0;font:500 1.4rem "IBM Plex Mono",monospace;text-align:right}
+.disp input:focus-visible{outline:0}
+#res{min-height:2.2rem;text-align:right;font:1.7rem "IBM Plex Mono",monospace;color:var(--acc);overflow-wrap:anywhere}
+/* Keypad: 5-column grid with function (fn), operator (op) and equals (eq) keys */
+.pad{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;max-width:440px}
+.pad button{padding:13px 0;border:1px solid var(--line);border-radius:8px;background:var(--key);font:500 1.05rem "IBM Plex Mono",monospace}
+.pad button:active{transform:translateY(1px)}
+.pad .fn{color:var(--acc)}
+.pad .op{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+.pad .eq{background:var(--hot);color:var(--hot-ink);border-color:var(--hot)}
+/* Error message colour */
+.err{color:#c0392b;font:.95rem "IBM Plex Mono",monospace}
+/* Mobile layout (screens under 720px): menu becomes a scrolling strip */
+@media (max-width:720px){
+ .layout{grid-template-columns:1fr}
+ nav{display:flex;overflow-x:auto;gap:4px;padding:6px}
+ nav h2{display:none}
+ nav button{white-space:nowrap;width:auto}
+ main{padding:16px}
+}
+/* ----- Japanese-inspired refinements (these override the base rules above) -----
+   Body font */
+body{font-family:"Zen Kaku Gothic New",system-ui,sans-serif}
+/* Decorative wave pattern above the header */
+.app::before{content:"";display:block;height:14px;margin-bottom:16px;background:radial-gradient(circle at 50% 100%,transparent 52%,var(--ai) 53% 58%,transparent 59%) 0 0/20px 14px;opacity:.5}
+/* Logo and name side by side */
+h1{display:flex;align-items:center;gap:14px}
+/* Red hanko-style seal logo (the characters 電卓 stacked) */
+.hanko{display:inline-block;background:var(--acc);color:#fff;font:700 1.2rem/1.1 "Zen Old Mincho",serif;padding:7px 8px;text-align:center;border-radius:3px;transform:rotate(-3deg);box-shadow:inset 0 0 0 3px var(--acc),inset 0 0 0 4px rgba(255,255,255,.6)}
+/* 'Dentaku' wordmark next to the seal */
+.word{font:700 1.8rem/1.15 "Zen Old Mincho",serif;letter-spacing:.05em}
+/* Sharp 2px corners everywhere for a crisp, paper-like look */
+#theme,nav,nav button,input,select,.disp,.pad button{border-radius:2px}
+main{border-radius:2px;border-top:3px solid var(--ink)}
+nav{border-radius:2px}
+/* Headings use the Mincho serif font */
+nav h2{font:700 .9rem "Zen Old Mincho",serif;color:var(--ink)}
+/* Selected menu item: dark background with a red bar on the left */
+nav button[aria-current="true"]{background:var(--ink);color:var(--panel);box-shadow:inset 4px 0 0 var(--acc)}
+main h2{font:700 1.45rem "Zen Old Mincho",serif}
+/* Function keys use the indigo accent colour */
+.pad .fn{color:var(--ai)}
+/* Larger main result number */
+.row.big b{font-size:2.1rem}
+/* Small helper text */
+.hint{color:var(--mute);margin:0 0 14px}
+/* Number base converter inputs: monospace font, red outline when a digit is invalid */
+.bx{font-family:"IBM Plex Mono",monospace}
+.bx[aria-invalid="true"]{border-color:var(--acc);box-shadow:inset 0 0 0 1px var(--acc)}
+/* Keypad keys: relative position lets the small SHIFT label sit in the top-right corner */
+.pad button{position:relative;font-size:.95rem}
+.pad button i{position:absolute;top:1px;right:4px;font:500 .6rem "Zen Kaku Gothic New",sans-serif;font-style:normal;color:var(--hot)}
+/* SHIFT-active keys and pressed state of the SHIFT / hyp / STO keys */
+.pad .sh{color:var(--hot)}
+.pad button[aria-pressed="true"]{outline:2px solid var(--hot);outline-offset:-2px}
+/* Memory variable buttons A-F, X, Y, M */
+.vars{display:grid;grid-template-columns:repeat(9,1fr);gap:6px;max-width:440px;margin-bottom:8px}
+.vars button{padding:7px 0;border:1px solid var(--line);background:var(--key);border-radius:2px;font:500 .9rem "IBM Plex Mono",monospace}
+/* Status line under the result (SHIFT, HYP, angle mode) */
+#st{color:var(--mute);font:.78rem "IBM Plex Mono",monospace;text-align:left;min-height:1.1rem;margin-top:4px}
+/* Result format dropdown */
+.fmw{display:block;max-width:200px;margin-bottom:10px}

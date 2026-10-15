@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dentaku 電卓</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Zen+Old+Mincho:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eceff3;--panel:#fff;--ink:#17233b;--mute:#5d6a82;--line:#d3d9e3;--acc:#0b7d80;--acc-ink:#fff;--key:#f1f3f7;--hot:#f0b429;--hot-ink:#2a1d00}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1522;--panel:#161f31;--ink:#e6ebf5;--mute:#98a4bb;--line:#27324a;--acc:#3cc4c7;--acc-ink:#06242a;--key:#1d283d;--hot:#f0b429;--hot-ink:#2a1d00}}
+:root[data-theme="dark"]{--bg:#0e1522;--panel:#161f31;--ink:#e6ebf5;--mute:#98a4bb;--line:#27324a;--acc:#3cc4c7;--acc-ink:#06242a;--key:#1d283d;--hot:#f0b429;--hot-ink:#2a1d00}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "IBM Plex Sans",system-ui,sans-serif}
+.app{max-width:1020px;margin:0 auto;padding:20px 16px 40px}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+h1{font-size:1.5rem;margin:0;font-weight:600;letter-spacing:-.01em}
+h1 small{display:block;font-size:.85rem;font-weight:400;color:var(--mute);letter-spacing:0}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+#theme{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:6px 14px}
+.layout{display:grid;grid-template-columns:210px 1fr;gap:18px;align-items:start}
+nav{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:8px}
+nav h2{font-size:.8rem;color:var(--mute);margin:10px 10px 4px;font-weight:500}
+nav button{display:block;width:100%;text-align:left;background:none;border:0;border-radius:8px;padding:8px 10px}
+nav button:hover{background:var(--key)}
+nav button[aria-current="true"]{background:var(--acc);color:var(--acc-ink);font-weight:500}
+main{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;min-width:0}
+main h2{margin:0 0 16px;font-size:1.25rem}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px}
+label{display:block;font-size:.88rem;color:var(--mute)}
+input,select{width:100%;margin-top:4px;padding:10px 12px;font:inherit;color:var(--ink);background:var(--key);border:1px solid var(--line);border-radius:8px}
+.out{margin-top:22px;border-top:1px solid var(--line);padding-top:16px}
+.row{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px dashed var(--line)}
+.row span:first-child{color:var(--mute)}
+.row b{font-family:"IBM Plex Mono",monospace;font-weight:500;text-align:right;overflow-wrap:anywhere}
+.row.big{display:block;border:0;padding:0 0 10px}
+.row.big span{display:block;font-size:.88rem}
+.row.big b{display:block;font-size:2rem;text-align:left;color:var(--acc)}
+.disp{background:var(--key);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:12px}
+.disp input{background:none;border:0;padding:0;margin:0;font:500 1.4rem "IBM Plex Mono",monospace;text-align:right}
+.disp input:focus-visible{outline:0}
+#res{min-height:2.2rem;text-align:right;font:1.7rem "IBM Plex Mono",monospace;color:var(--acc);overflow-wrap:anywhere}
+.pad{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;max-width:440px}
+.pad button{padding:13px 0;border:1px solid var(--line);border-radius:8px;background:var(--key);font:500 1.05rem "IBM Plex Mono",monospace}
+.pad button:active{transform:translateY(1px)}
+.pad .fn{color:var(--acc)}
+.pad .op{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+.pad .eq{background:var(--hot);color:var(--hot-ink);border-color:var(--hot)}
+.mode{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;margin-bottom:12px}
+.mode button{background:none;border:0;padding:6px 14px}
+.mode button[aria-pressed="true"]{background:var(--acc);color:var(--acc-ink)}
+.err{color:#c0392b;font:.95rem "IBM Plex Mono",monospace}
+@media (max-width:720px){
+ .layout{grid-template-columns:1fr}
+ nav{display:flex;overflow-x:auto;gap:4px;padding:6px}
+ nav h2{display:none}
+ nav button{white-space:nowrap;width:auto}
+ main{padding:16px}
+}
+:root{--bg:#ece5d6;--panel:#f7f3e8;--ink:#1c1a17;--mute:#675f53;--line:#cdc3ae;--acc:#b3261e;--acc-ink:#fff;--key:#ebe4d2;--hot:#b3261e;--hot-ink:#fff;--ai:#27506f}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121110;--panel:#1b1916;--ink:#ece5d6;--mute:#a59c8b;--line:#38342d;--acc:#d3412b;--acc-ink:#fff;--key:#262320;--hot:#d3412b;--hot-ink:#fff;--ai:#8fb3d1}}
+:root[data-theme="dark"]{--bg:#121110;--panel:#1b1916;--ink:#ece5d6;--mute:#a59c8b;--line:#38342d;--acc:#d3412b;--acc-ink:#fff;--key:#262320;--hot:#d3412b;--hot-ink:#fff;--ai:#8fb3d1}
+body{font-family:"Zen Kaku Gothic New",system-ui,sans-serif}
+.app::before{content:"";display:block;height:14px;margin-bottom:16px;background:radial-gradient(circle at 50% 100%,transparent 52%,var(--ai) 53% 58%,transparent 59%) 0 0/20px 14px;opacity:.5}
+h1{display:flex;align-items:center;gap:14px}
+.hanko{display:inline-block;background:var(--acc);color:#fff;font:700 1.2rem/1.1 "Zen Old Mincho",serif;padding:7px 8px;text-align:center;border-radius:3px;transform:rotate(-3deg);box-shadow:inset 0 0 0 3px var(--acc),inset 0 0 0 4px rgba(255,255,255,.6)}
+.word{font:700 1.8rem/1.15 "Zen Old Mincho",serif;letter-spacing:.05em}
+h1 small{font:400 .8rem "Zen Kaku Gothic New",sans-serif;letter-spacing:.25em;color:var(--mute)}
+#theme,nav,nav button,input,select,.disp,.mode,.pad button{border-radius:2px}
+main{border-radius:2px;border-top:3px solid var(--ink)}
+nav{border-radius:2px}
+nav h2{font:700 .9rem "Zen Old Mincho",serif;color:var(--ink)}
+nav h2 small,nav button small{font:400 .72rem "Zen Kaku Gothic New",sans-serif;color:var(--mute);margin-left:6px}
+nav button small{opacity:.8;color:inherit}
+nav button[aria-current="true"]{background:var(--ink);color:var(--panel);box-shadow:inset 4px 0 0 var(--acc)}
+main h2{font:700 1.45rem "Zen Old Mincho",serif}
+main h2 small{font:400 .85rem "Zen Kaku Gothic New",sans-serif;color:var(--mute);margin-left:10px}
+.pad .fn{color:var(--ai)}
+.row.big b{font-size:2.1rem}
+.hint{color:var(--mute);margin:0 0 14px}
+.bx{font-family:"IBM Plex Mono",monospace}
+.bx[aria-invalid="true"]{border-color:var(--acc);box-shadow:inset 0 0 0 1px var(--acc)}
+.pad button{position:relative;font-size:.95rem}
+.pad button i{position:absolute;top:1px;right:4px;font:500 .6rem "Zen Kaku Gothic New",sans-serif;font-style:normal;color:var(--hot)}
+.pad .sh{color:var(--hot)}
+.pad button[aria-pressed="true"]{outline:2px solid var(--hot);outline-offset:-2px}
+.vars{display:grid;grid-template-columns:repeat(9,1fr);gap:6px;max-width:440px;margin-bottom:8px}
+.vars button{padding:7px 0;border:1px solid var(--line);background:var(--key);border-radius:2px;font:500 .9rem "IBM Plex Mono",monospace}
+#st{color:var(--mute);font:.78rem "IBM Plex Mono",monospace;text-align:left;min-height:1.1rem;margin-top:4px}
+.fmw{display:block;max-width:200px;margin-bottom:10px}
+</style>
+</head>
+<body>
+<div class="app">
+ <header>
+  <h1 aria-label="Dentaku 電卓"><span class="hanko" aria-hidden="true">電<br>卓</span><span class="word">Dentaku</span></h1>
+  <button id="theme" type="button" aria-label="Toggle dark mode">Theme</button>
+ </header>
+ <div class="layout">
+  <nav id="nav" aria-label="Calculators"></nav>
+  <main id="main" aria-live="polite"></main>
+ </div>
+</div>
+<script>
+const $=s=>document.querySelector(s);
+const fmt=(x,d=2)=>isFinite(x)?Number(x).toLocaleString('en-IN',{maximumFractionDigits:d}):'—';
+const today=new Date().toISOString().slice(0,10);
+const U={
+ Length:{mm:.001,cm:.01,m:1,km:1000,inch:.0254,foot:.3048,yard:.9144,mile:1609.344},
+ Mass:{mg:1e-6,g:.001,kg:1,tonne:1000,quintal:100,ounce:.028349523,pound:.45359237},
+ Area:{'sq m':1,'sq km':1e6,hectare:1e4,acre:4046.8564,'sq ft':.09290304,'sq yard':.83612736},
+ Volume:{mL:.001,litre:1,cup:.2365882365,'gallon (US)':3.785411784},
+ Speed:{'m/s':1,'km/h':1/3.6,mph:.44704,knot:.514444},
+ Data:{byte:1,KB:1024,MB:1048576,GB:1073741824,TB:1099511627776},
+ Temperature:{Celsius:1,Fahrenheit:1,Kelvin:1}
+};
+const ymd=(a,b)=>{let[x,y]=[new Date(a),new Date(b)];if(x>y)[x,y]=[y,x];
+ let Y=y.getUTCFullYear()-x.getUTCFullYear(),M=y.getUTCMonth()-x.getUTCMonth(),D=y.getUTCDate()-x.getUTCDate();
+ if(D<0){M--;D+=new Date(Date.UTC(y.getUTCFullYear(),y.getUTCMonth(),0)).getUTCDate()}
+ if(M<0){Y--;M+=12}return[Y,M,D,Math.round((y-x)/864e5)]};
+const calcs=[
+{id:'sci',g:'Everyday',name:'Scientific calculator'},
+{id:'pct',g:'Everyday',name:'Percentage',
+ f:()=>[{id:'m',l:'Type',t:'select',o:{of:'X% of Y',is:'X is what % of Y',chg:'% change X → Y'},v:'of'},{id:'a',l:'X',v:20},{id:'b',l:'Y',v:500}],
+ r:(n,v)=>v.m==='of'?[['Result',fmt(n('a')/100*n('b'),4),1]]:v.m==='is'?[['Percentage',fmt(n('a')/n('b')*100,4)+' %',1]]:[['Change',fmt((n('b')-n('a'))/n('a')*100,4)+' %',1],['Difference',fmt(n('b')-n('a'),4)]]},
+{id:'disc',g:'Everyday',name:'Discount',
+ f:()=>[{id:'p',l:'Original price',v:2000},{id:'d',l:'Discount %',v:25}],
+ r:n=>[['You pay',fmt(n('p')*(1-n('d')/100)),1],['You save',fmt(n('p')*n('d')/100)]]},
+{id:'tip',g:'Everyday',name:'Tip & bill split',
+ f:()=>[{id:'b',l:'Bill amount',v:1800},{id:'t',l:'Tip %',v:10},{id:'p',l:'People',v:4}],
+ r:n=>{const tip=n('b')*n('t')/100,tot=n('b')+tip;return[['Each person pays',fmt(tot/n('p')),1],['Tip',fmt(tip)],['Total bill',fmt(tot)]]}},
+{id:'unit',g:'Everyday',name:'Unit converter',
+ f:v=>{const c=v.c||'Length',k=Object.keys(U[c]);if(!(v.from in U[c])){v.from=k[0];v.to=k[1]||k[0]}
+  const o=Object.fromEntries(k.map(x=>[x,x]));return[{id:'c',l:'Category',t:'select',o:Object.fromEntries(Object.keys(U).map(x=>[x,x])),v:'Length',re:1},{id:'x',l:'Value',v:1},{id:'from',l:'From',t:'select',o,v:k[0]},{id:'to',l:'To',t:'select',o,v:k[1]}]},
+ r:(n,v)=>{const c=v.c,x=n('x');let out;
+  if(c==='Temperature'){let C=v.from==='Celsius'?x:v.from==='Fahrenheit'?(x-32)*5/9:x-273.15;out=v.to==='Celsius'?C:v.to==='Fahrenheit'?C*9/5+32:C+273.15}
+  else out=x*U[c][v.from]/U[c][v.to];
+  return[['Result',fmt(out,8)+' '+v.to,1]]}},
+{id:'emi',g:'Money',name:'Loan EMI',
+ f:()=>[{id:'p',l:'Loan amount',v:500000},{id:'r',l:'Interest % per year',v:9},{id:'y',l:'Years',v:5}],
+ r:n=>{const i=n('r')/1200,m=n('y')*12,e=i?n('p')*i*Math.pow(1+i,m)/(Math.pow(1+i,m)-1):n('p')/m;
+  return[['Monthly EMI',fmt(e),1],['Total interest',fmt(e*m-n('p'))],['Total payment',fmt(e*m)]]}},
+{id:'ci',g:'Money',name:'Compound interest',
+ f:()=>[{id:'p',l:'Principal',v:100000},{id:'r',l:'Rate % per year',v:7},{id:'y',l:'Years',v:10},{id:'n',l:'Compounded',t:'select',o:{1:'Yearly',2:'Half-yearly',4:'Quarterly',12:'Monthly'},v:4}],
+ r:n=>{const A=n('p')*Math.pow(1+n('r')/100/n('n'),n('n')*n('y'));return[['Final amount',fmt(A),1],['Interest earned',fmt(A-n('p'))]]}},
+{id:'sip',g:'Money',name:'SIP / monthly saving',
+ f:()=>[{id:'p',l:'Monthly amount',v:5000},{id:'r',l:'Expected return % per year',v:12},{id:'y',l:'Years',v:10}],
+ r:n=>{const i=n('r')/1200,m=n('y')*12,F=i?n('p')*((Math.pow(1+i,m)-1)/i)*(1+i):n('p')*m;
+  return[['Future value',fmt(F),1],['Total invested',fmt(n('p')*m)],['Estimated gain',fmt(F-n('p')*m)]]}},
+{id:'gst',g:'Money',name:'GST / tax',
+ f:()=>[{id:'a',l:'Amount',v:1000},{id:'r',l:'Tax rate %',t:'select',o:{5:'5%',12:'12%',18:'18%',28:'28%'},v:18},{id:'m',l:'Amount is',t:'select',o:{ex:'Without tax',inc:'Including tax'},v:'ex'}],
+ r:(n,v)=>{const r=n('r')/100,net=v.m==='ex'?n('a'):n('a')/(1+r),tax=net*r;return[['Total with tax',fmt(net+tax),1],['Amount without tax',fmt(net)],['Tax',fmt(tax)]]}},
+{id:'bmi',g:'Health & dates',name:'BMI',
+ f:()=>[{id:'w',l:'Weight (kg)',v:65},{id:'h',l:'Height (cm)',v:170}],
+ r:n=>{const b=n('w')/Math.pow(n('h')/100,2);return[['BMI',fmt(b,1),1],['Category',b<18.5?'Underweight':b<25?'Normal':b<30?'Overweight':'Obese'],['Healthy weight range',fmt(18.5*Math.pow(n('h')/100,2),1)+' – '+fmt(24.9*Math.pow(n('h')/100,2),1)+' kg']]}},
+{id:'age',g:'Health & dates',name:'Age',
+ f:()=>[{id:'d',l:'Date of birth',t:'date',v:'2004-01-01'},{id:'o',l:'Age on',t:'date',v:today}],
+ r:(n,v)=>{if(!v.d||!v.o)return[];const[Y,M,D,T]=ymd(v.d,v.o),b=new Date(v.d),o=new Date(v.o);
+  let nb=Date.UTC(o.getUTCFullYear(),b.getUTCMonth(),b.getUTCDate());if(nb<o)nb=Date.UTC(o.getUTCFullYear()+1,b.getUTCMonth(),b.getUTCDate());
+  return[['Age',Y+' y '+M+' m '+D+' d',1],['Total days lived',fmt(T,0)],['Next birthday in',fmt(Math.round((nb-o)/864e5),0)+' days']]}},
+{id:'dd',g:'Health & dates',name:'Date difference',
+ f:()=>[{id:'a',l:'From',t:'date',v:today},{id:'b',l:'To',t:'date',v:today}],
+ r:(n,v)=>{if(!v.a||!v.b)return[];const[Y,M,D,T]=ymd(v.a,v.b);return[['Difference',Y+' y '+M+' m '+D+' d',1],['Total days',fmt(T,0)],['Weeks',fmt(T/7,1)]]}},
+{id:'base',g:'Programmer',name:'Number base',
+ f:()=>[{id:'x',l:'Number',t:'text',v:'255'},{id:'b',l:'Entered in',t:'select',o:{2:'Binary',8:'Octal',10:'Decimal',16:'Hex'},v:10}],
+ r:(n,v)=>{const x=parseInt(v.x,+v.b);if(isNaN(x))return[['Error','Not a valid number for that base']];return[['Decimal',x.toString(10),1],['Binary',x.toString(2)],['Octal',x.toString(8)],['Hex',x.toString(16).toUpperCase()]]}}
+];
+const vals={};let cur='sci',deg=true,ans=0;
+const nav=$('#nav'),main=$('#main');
+const jp={sci:'関数',pct:'百分率',disc:'割引',tip:'割り勘',unit:'単位',emi:'ローン',ci:'複利',sip:'積立',gst:'税',bmi:'体格',age:'年齢',dd:'日数',base:'進数'},jg={Everyday:'日常',Money:'お金','Health & dates':'健康と日付',Programmer:'開発'};
+function drawNav(){let h='',g='';calcs.forEach(c=>{if(c.g!==g){g=c.g;h+=`<h2>${g}</h2>`}h+=`<button type="button" data-id="${c.id}" aria-current="${c.id===cur}">${c.name}</button>`});nav.innerHTML=h}
+nav.onclick=e=>{const b=e.target.closest('button');if(b){cur=b.dataset.id;drawNav();draw()}};
+function draw(){const c=calcs.find(x=>x.id===cur);if(c.id==='sci')return sci();if(c.id==='base')return base();
+ const v=vals[c.id]=vals[c.id]||{};const fs=c.f(v);
+ fs.forEach(f=>{if(v[f.id]===undefined)v[f.id]=f.v});
+ main.innerHTML=`<h2>${c.name}</h2><div class="fields">`+fs.map(f=>`<label>${f.l}`+(f.t==='select'
+  ?`<select data-k="${f.id}" ${f.re?'data-re=1':''}>`+Object.entries(f.o).map(([k,t])=>`<option value="${k}" ${String(v[f.id])===k?'selected':''}>${t}</option>`).join('')+'</select>'
+  :`<input data-k="${f.id}" type="${f.t||'number'}" ${f.t?'':'step="any" inputmode="decimal"'} value="${v[f.id]}">`)+'</label>').join('')+'</div><div class="out" id="out"></div>';
+ res()}
+function res(){const c=calcs.find(x=>x.id===cur),v=vals[cur];const n=k=>parseFloat(v[k]);
+ let rows;try{rows=c.r(n,v)}catch(e){rows=[]}
+ $('#out').innerHTML=rows.map(([l,x,big])=>`<div class="row${big?' big':''}"><span>${l}</span><b>${x}</b></div>`).join('')}
+main.addEventListener('input',e=>{const k=e.target.dataset.k;if(!k)return;vals[cur][k]=e.target.value;e.target.dataset.re?draw():res()});
+let bv=255n;
+function base(){
+ const B=[['Binary',2],['Octal',8],['Decimal',10],['Hexadecimal',16]];
+ main.innerHTML=`<h2>Number base</h2><p class="hint">Type in any box. The other three update as you type.</p><div class="fields">`+B.map(([n,b])=>`<label>${n}<input class="bx" data-b="${b}" autocomplete="off" spellcheck="false" aria-label="${n}"></label>`).join('')+'</div><div class="out" id="out"></div>';
+ const ins=[...main.querySelectorAll('.bx')];
+ const parse=(s,b)=>{s=s.toLowerCase().replace(/[\s_]/g,'');if(!s)return null;const neg=s[0]==='-';if(neg)s=s.slice(1);const dg='0123456789abcdef'.slice(0,b);if(!s||[...s].some(c=>!dg.includes(c)))return NaN;let v=0n;for(const c of s)v=v*BigInt(b)+BigInt(dg.indexOf(c));return neg?-v:v};
+ const show=src=>{ins.forEach(i=>{if(i!==src)i.value=bv===null?'':bv.toString(+i.dataset.b).toUpperCase()});
+  const o=$('#out');if(bv===null){o.innerHTML='';return}
+  const a=bv<0n?-bv:bv,bin=a.toString(2),pad=bin.padStart(Math.ceil(bin.length/4)*4,'0').replace(/(.{4})(?=.)/g,'$1 ');
+  o.innerHTML=`<div class="row"><span>Binary in groups of 4</span><b>${bv<0n?'-':''}${pad}</b></div><div class="row"><span>Bits needed</span><b>${bin.length}</b></div>`};
+ ins.forEach(i=>i.oninput=()=>{const v=parse(i.value,+i.dataset.b);i.setAttribute('aria-invalid',v!==v);if(v!==v)return;bv=v;show(i)});
+ show(null)}
+const V={A:0,B:0,C:0,D:0,E:0,F:0,X:0,Y:0,M:0};
+let ang='deg',shift=0,hyp=0,sto=0,fr=0,lastN=null;
+const tr=x=>ang=='deg'?x*Math.PI/180:ang=='gra'?x*Math.PI/200:x,ia=x=>ang=='deg'?x*180/Math.PI:ang=='gra'?x*200/Math.PI:x;
+const fact=n=>{if(n<0||n%1)return NaN;let r=1;for(let i=2;i<=n;i++)r*=i;return r};
+const FN={sin:x=>Math.sin(tr(x)),cos:x=>Math.cos(tr(x)),tan:x=>Math.tan(tr(x)),asin:x=>ia(Math.asin(x)),acos:x=>ia(Math.acos(x)),atan:x=>ia(Math.atan(x)),
+ sinh:Math.sinh,cosh:Math.cosh,tanh:Math.tanh,asinh:Math.asinh,acosh:Math.acosh,atanh:Math.atanh,ln:Math.log,log:Math.log10,sqrt:Math.sqrt,cbrt:Math.cbrt,abs:Math.abs,
+ fact,npr:(n,r)=>fact(n)/fact(n-r),ncr:(n,r)=>fact(n)/fact(r)/fact(n-r),root:(n,x)=>x<0&&n%2?-Math.pow(-x,1/n):Math.pow(x,1/n),
+ rnd:x=>parseFloat(x.toPrecision(10)),rand:()=>Math.floor(Math.random()*1000)/1000,dms:(d,m=0,s=0)=>d+m/60+s/3600,pi:Math.PI,e:Math.E};
+const K=['SHIFT||#sh||op','hyp||#hy||op','STO||#st||op','DEG||#drg||op','a b/c||#fr||op',
+'x²|x³|^2|^3|fn','x⁻¹|x!|^(-1)|!|fn','xʸ|ˣ√|^|root(|fn','√|∛|sqrt(|cbrt(|fn','log|10ˣ|log(|10^(|fn',
+'ln|eˣ|ln(|e^(|fn','sin|sin⁻¹|sin(|asin(|fn','cos|cos⁻¹|cos(|acos(|fn','tan|tan⁻¹|tan(|atan(|fn','nPr|nCr|npr(|ncr(|fn',
+'(|Abs|(|abs(|fn',')||)||fn',',||,||fn','π|e|π|e|fn','EXP||E||fn',
+'d/dx||dx(||fn','∫dx||int(||fn','Σ||sum(||fn','SOLVE||solve(||fn','°′″||dms(||fn',
+'7||7||','8||8||','9||9||','DEL||#del||op','AC||#ac||op',
+'4||4||','5||5||','6||6||','×||×||op','÷||÷||op',
+'1||1||','2||2||','3||3||','+||+||op','−||−||op',
+'0|Rnd|0|rnd(|','.|Ran#|.|rand()|','Ans||ans||fn','M+|M−|#mp|#mm|op','=||#eq||eq'];
+function spec(s){
+ for(const nm of ['dx','int','sum','solve']){let i;
+  while((i=s.lastIndexOf(nm+'('))>=0){
+   let d=1,j=i+nm.length+1,b=j;const p=[];
+   for(;j<s.length;j++){const c=s[j];if(c=='(')d++;else if(c==')'){if(!--d)break}else if(c==','&&d==1){p.push(s.slice(b,j));b=j+1}}
+   if(d)throw Error('Check brackets');p.push(s.slice(b,j));
+   const f=x=>ev(p[0],x),n=k=>ev(p[k]);let r;
+   if(nm=='dx'){const x=n(1),h=1e-3;r=(-f(x+2*h)+8*f(x+h)-8*f(x-h)+f(x-2*h))/(12*h)}
+   else if(nm=='int'){const a=n(1),z=n(2),N=1000,h=(z-a)/N;r=f(a)+f(z);for(let k=1;k<N;k++)r+=(k%2?4:2)*f(a+k*h);r*=h/3}
+   else if(nm=='sum'){r=0;for(let k=n(1);k<=n(2);k++)r+=f(k)}
+   else{let x=p[1]?n(1):1;const q=p[0].split('='),g=y=>ev(q.length==2?'('+q[0]+')-('+q[1]+')':p[0],y);
+    for(let k=0;k<60;k++){const v=g(x),dv=(g(x+1e-6)-v)/1e-6;if(!dv)break;const nx=x-v/dv;if(Math.abs(nx-x)<1e-12){x=nx;break}x=nx}r=x}
+   if(!isFinite(r))throw Error('Math error');
+   s=s.slice(0,i)+'('+r.toLocaleString('en-US',{useGrouping:false,maximumFractionDigits:20})+')'+s.slice(j+1)}}
+ return s}
+const prep=s=>s.replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-').replace(/π/g,'pi')
+ .replace(/(\d+(?:\.\d+)?)E([+-]?\d+)/g,'$1*10**($2)')
+ .replace(/\(([^()]*)\)!/g,'fact($1)').replace(/(\d+(?:\.\d+)?|[A-FXYM])!/g,'fact($1)')
+ .replace(/\^/g,'**').replace(/-(\d+(?:\.\d+)?|[A-FXYM])\*\*(\d+(?:\.\d+)?|[A-FXYM]|\([^()]*\))/g,'-($1**$2)')
+ .replace(/(\d|\))\s*(?=[a-zA-Z(])/g,'$1*');
+function ev(s,x){s=prep(spec(s));
+ const S=Object.assign(Object.create(null),FN,V,{ans});if(x!==undefined)S.X=x;
+ const bad=(s.match(/[A-Za-z]+/g)||[]).find(i=>!(i in S));if(bad)throw Error('Unknown word: '+bad);
+ return Function('F','with(F){return ('+s+')}')(S)}
+function calc(s){if(!s.trim())return{n:null};
+ try{const r=ev(s);if(typeof r!='number'||!isFinite(r))return{err:'Math error'};return{n:parseFloat(r.toPrecision(12))}}
+ catch(e){return{err:/^(Math|Unknown|Check)/.test(e.message)?e.message:'Check your expression'}}}
+function frac(x){if(!isFinite(x))return'';const s=x<0?'-':'',a=Math.abs(x);let h1=1,h0=0,k1=0,k0=1,b=a;
+ for(let i=0;i<20;i++){const f=Math.floor(b);[h1,h0]=[f*h1+h0,h1];[k1,k0]=[f*k1+k0,k1];if(Math.abs(a-h1/k1)<1e-9||k1>1e4)break;b=1/(b-f)}
+ if(k1>1e4||Math.abs(a-h1/k1)>1e-9)return'';const w=Math.floor(h1/k1),n=h1-w*k1;
+ return k1==1?s+h1:s+(w?w+' ':'')+n+'/'+k1}
+function fmtN(x){const m=$('#fm')?.value||'norm';if(fr){const f=frac(x);if(f)return f}
+ if(m=='fix')return x.toFixed(2);
+ if(m=='sci')return x.toExponential(5).replace('e',' ×10^').replace('+','');
+ if(m=='eng'){if(!x)return'0';const e=Math.floor(Math.log10(Math.abs(x))/3)*3;return parseFloat((x/10**e).toPrecision(6))+(e?' ×10^'+e:'')}
+ if(m=='dms'){const a=Math.abs(x),d=Math.floor(a),mm=Math.floor((a-d)*60),ss=((a-d)*60-mm)*60;return(x<0?'-':'')+d+'°'+mm+'′'+parseFloat(ss.toFixed(2))+'″'}
+ return String(x)}
+const showRes=()=>{$('#res').textContent=lastN===null?'':fmtN(lastN)};
+function go(q){const r=calc($('#ex').value);
+ if(r.err){if(!q)$('#res').innerHTML='<span class="err">'+r.err+'</span>';return}
+ if(r.n===null)return;ans=lastN=r.n;if(!q)showRes()}
+const ins=t=>{const e=$('#ex');e.setRangeText(t,e.selectionStart,e.selectionEnd,'end')};
+function press(i){const[,,n,sn]=K[i].split('|'),e=$('#ex');let t=shift&&sn?sn:n;
+ if(t=='#sh')shift=!shift;else if(t=='#hy')hyp=!hyp;else if(t=='#st')sto=!sto;
+ else if(t=='#drg')ang=ang=='deg'?'rad':ang=='rad'?'gra':'deg';
+ else if(t=='#fr'){fr=!fr;go(1);showRes()}
+ else{shift=0;
+  if(t=='#ac'){e.value='';lastN=null;showRes()}
+  else if(t=='#del'){const p=e.selectionStart;e.selectionStart==e.selectionEnd&&p>0?e.setRangeText('',p-1,p,'end'):e.setRangeText('',e.selectionStart,e.selectionEnd,'end')}
+  else if(t=='#eq')go();
+  else if(t=='#mp'||t=='#mm'){go(1);V.M+=(t=='#mp'?1:-1)*ans;$('#res').textContent='M = '+fmtN(V.M)}
+  else{if(hyp&&/^a?(sin|cos|tan)\(/.test(t)){t=t.replace('(','h(');hyp=0}ins(t)}}
+ drawPad();e.focus()}
+function drawPad(){$('#pad').innerHTML=K.map((k,i)=>{const[l,s,,,c]=k.split('|'),on=[shift,hyp,sto][i];
+  return `<button type="button" data-i="${i}" class="${c}${shift&&s?' sh':''}"${on?' aria-pressed="true"':''}>${i==3?ang.toUpperCase():shift&&s?s:l}${!shift&&s?`<i>${s}</i>`:''}</button>`}).join('');
+ $('#st').textContent=[shift&&'SHIFT',hyp&&'HYP',sto&&'STO: pick A-F, X, Y or M',ang.toUpperCase()].filter(Boolean).join('  ')}
+function sci(){
+ main.innerHTML=`<h2>Scientific calculator</h2><div class="disp"><input id="ex" aria-label="Expression" autocomplete="off" spellcheck="false" inputmode="none" placeholder="0"><div id="res"></div><div id="st"></div></div>
+ <label class="fmw">Result format<select id="fm"><option value="norm">Norm</option><option value="fix">Fix 2</option><option value="sci">Sci 5</option><option value="eng">Eng</option><option value="dms">° ′ ″</option></select></label>
+ <div class="vars">${Object.keys(V).map(k=>`<button type="button" data-v="${k}" title="${k} = ${V[k]}">${k}</button>`).join('')}</div><div class="pad" id="pad"></div>
+ <p class="hint">Red labels are SHIFT functions. Press hyp before sin, cos or tan for hyperbolic. STO then A–F, X, Y or M saves the result. Calculus uses X as the variable: dx(X^2,3), int(X^2,0,1), sum(X,1,10), solve(X^2-4,1). Roots: root(3,27).</p>`;
+ $('#pad').onclick=e=>{const b=e.target.closest('button');if(b)press(+b.dataset.i)};
+ main.querySelector('.vars').onclick=e=>{const b=e.target.closest('button');if(!b)return;const k=b.dataset.v;
+  if(sto){go(1);V[k]=ans;sto=0;b.title=k+' = '+ans;$('#res').textContent=k+' = '+fmtN(ans)}else ins(k);drawPad()};
+ $('#ex').onkeydown=e=>{if(e.key=='Enter')go()};$('#fm').onchange=showRes;drawPad()}
+
+$('#theme').onclick=()=>{const d=document.documentElement,dark=d.dataset.theme?d.dataset.theme==='dark':matchMedia('(prefers-color-scheme:dark)').matches;d.dataset.theme=dark?'light':'dark'};
+drawNav();draw();
+</script>
+</body>
+</html>
